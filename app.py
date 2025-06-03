@@ -69,8 +69,15 @@ class FeaturesSchema(Schema):
     nb_customers_on_day = fields.Int(required=True)
     open = fields.Int(required=True)
     promotion = fields.Int(required=True)
-    state_holiday = fields.Int(required=True)
+    state_holiday = fields.Str(required=True, validate=validate.OneOf(["0", "a", "b", "c"]))
     school_holiday = fields.Int(required=True)
+
+    @validates('date')
+    def validate_date(self, value, **kwargs):
+        min = '31/07/2015'
+        min_date = datetime.strptime(min, '%d/%m/%Y').date()
+        if value <= min_date:
+            raise ValidationError(f"Date must be later than {min}")
 
 features_schema = FeaturesSchema()
 
