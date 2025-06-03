@@ -1,8 +1,9 @@
-from flask import Flask, request, jsonify
-from marshmallow import Schema, fields, ValidationError
+from flask import Flask, request, jsonify, render_template
+from datetime import datetime
+from marshmallow import Schema, fields, validate, validates, ValidationError
 from werkzeug.exceptions import UnsupportedMediaType
 
-from helper import run_xgb_model
+from model.run_xgb_model import run_model
 
 app = Flask(__name__)
 
@@ -88,9 +89,9 @@ def predict_sales():
             'message': f"Invalid input: data must be provided in the correct format. Check {docs_url} for more info."
         }), 400
 
-    prediction = run_xgb_model(data)
-
-    return jsonify(prediction)
+    y_pred = run_model(data)
+    prediction_value = y_pred[0].item()
+    return jsonify({"prediction": prediction_value})
 
 
 # 415
